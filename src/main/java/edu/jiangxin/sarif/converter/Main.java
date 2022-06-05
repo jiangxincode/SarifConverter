@@ -34,12 +34,19 @@ public class Main {
         CommandLineParser parser = new BasicParser();
         try {
             cmd = parser.parse(options, args);
+            String type = cmd.getOptionValue("type");
             String inputFile = cmd.getOptionValue("input");
             String outputFile = cmd.getOptionValue("output");
-            IConvert convert = new Infer2SarifConvert();
-            convert.convert(new File(inputFile), new File(outputFile));
+            switch (type) {
+                case "infer2sarif":
+                    IConvert convert = new Infer2SarifConvert();
+                    convert.convert(new File(inputFile), new File(outputFile));
+                    break;
+                default:
+                    System.err.println("Unsupported type: " + type);
+            }
         } catch (ParseException e) {
-            System.out.println("test");
+            System.err.println("ParseException: " + e.getMessage());
         }
     }
 }
