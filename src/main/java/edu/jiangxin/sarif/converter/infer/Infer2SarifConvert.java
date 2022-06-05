@@ -36,21 +36,26 @@ public class Infer2SarifConvert implements IConvert {
                                 .withAdditionalProperty("problem.severity", inferReport.getSeverity()));
                 addRuleIfNeed(rules, rule);
                 List<Location> locations = new ArrayList<>();
+                int startLine = bugTraces.get(0).getLineNumber() > 0 ? bugTraces.get(0).getLineNumber() : 1;
+                int endLine = bugTraces.get(1).getLineNumber() > 0 ? bugTraces.get(1).getLineNumber() : 1;
+                int startColumn = bugTraces.get(0).getColumnNumber() > 0 ? bugTraces.get(0).getColumnNumber() : 1;
+                int endColumn = bugTraces.get(1).getColumnNumber() > 0 ? bugTraces.get(1).getColumnNumber() : 1;
                 Location location = new Location()
                         .withPhysicalLocation(new PhysicalLocation()
                                 .withArtifactLocation(new ArtifactLocation()
                                         .withUri(inferReport.getFile()))
                                 .withRegion(new Region()
-                                        .withStartLine(bugTraces.get(0).getLineNumber())
-                                        .withEndLine(bugTraces.get(1).getLineNumber())
-                                        .withStartColumn(bugTraces.get(0).getColumnNumber())
-                                        .withEndColumn(bugTraces.get(1).getColumnNumber())));
+                                        .withStartLine(startLine)
+                                        .withEndLine(endLine)
+                                        .withStartColumn(startColumn)
+                                        .withEndColumn(endColumn)));
                 locations.add(location);
                 Result result = new Result()
                         .withRuleId(bugType)
                         .withMessage(new Message()
                                 .withText(inferReport.getQualifier()))
-                        .withLocations(locations);
+                        .withLocations(locations)
+                        .withPartialFingerprints(new PartialFingerprints().withAdditionalProperty("primaryLocationLineHash", inferReport.getHash()));
                 results.add(result);
             }
 
