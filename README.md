@@ -1,4 +1,4 @@
-# Java SARIF
+# SarifConverter
 
 Contains POJOs generated from the [Static Analysis Results Interchange Format 
 ](https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html) (SARIF) 
@@ -12,23 +12,18 @@ It uses Jackson for serialising/deserialing from JSON.
 
 ```xml
 <dependency>
-  <groupId>com.contrastsecurity</groupId>
-  <artifactId>java-sarif</artifactId>
-  <version>2.0</version>
+  <groupId>edu.jiangxin.sarif.converter</groupId>
+  <artifactId>SarifConverter</artifactId>
+  <version>${VERSION}</version>
 </dependency>
 ```
-
-### Developing with Java SARIF
-
-All classes reside in the `com.contrastsecurity.sarif` package. The JSON schema used to generate 
-them is located in `src/main/resources/schema`.
 
 #### Building Objects
 
 Building is provided with method chaining, e.g. for Message
 
 ```java
-import com.contrastsecurity.sarif.Message;
+import edu.jiangxin.sarif.converter.Message;
 // ...
 Message message = new Message()
     .withText("SQL Injection")
@@ -58,10 +53,3 @@ public class Message {
     // ...
 }
 ```
-
-<br/>
-<hr/>
-<br/>
-
-This library uses [jsonschema2pojo](https://github.com/joelittlejohn/jsonschema2pojo) for 
-generation.
