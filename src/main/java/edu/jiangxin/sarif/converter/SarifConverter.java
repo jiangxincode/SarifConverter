@@ -1,11 +1,11 @@
 package edu.jiangxin.sarif.converter;
 
-import edu.jiangxin.sarif.converter.infer.Infer2SarifConvert;
+import edu.jiangxin.sarif.converter.infer.Infer2SarifConverter;
 import org.apache.commons.cli.*;
 
 import java.io.File;
 
-public class Main {
+public class SarifConverter {
     public static void main(String[] args) {
         Options options = new Options();
 
@@ -35,18 +35,22 @@ public class Main {
         try {
             cmd = parser.parse(options, args);
             String type = cmd.getOptionValue("type");
-            String inputFile = cmd.getOptionValue("input");
-            String outputFile = cmd.getOptionValue("output");
-            switch (type) {
-                case "infer2sarif":
-                    IConvert convert = new Infer2SarifConvert();
-                    convert.convert(new File(inputFile), new File(outputFile));
-                    break;
-                default:
-                    System.err.println("Unsupported type: " + type);
-            }
+            File inputFile = new File(cmd.getOptionValue("input"));
+            File outputFile = new File(cmd.getOptionValue("output"));
+            convertByType(type, inputFile, outputFile);
         } catch (ParseException e) {
             System.err.println("ParseException: " + e.getMessage());
+        }
+    }
+
+    public static void convertByType(String type, File inputFile, File outputFile) {
+        switch (type) {
+            case "infer2sarif":
+                IConverter convert = new Infer2SarifConverter();
+                convert.convert(inputFile, outputFile);
+                break;
+            default:
+                System.err.println("Unsupported type: " + type);
         }
     }
 }

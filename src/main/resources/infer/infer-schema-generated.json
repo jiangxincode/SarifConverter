@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "severity": {
+        "type": "string"
+      },
+      "access": {
+        "type": "string"
+      },
+      "bug_type": {
+        "type": "string"
+      },
+      "line": {
+        "type": "integer"
+      },
+      "column": {
+        "type": "integer"
+      },
+      "bug_trace": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "type": "string"
+            },
+            "level": {
+              "type": "integer"
+            },
+            "line_number": {
+              "type": "integer"
+            },
+            "column_number": {
+              "type": "integer"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "procedure": {
+        "type": "string"
+      },
+      "bug_type_hum": {
+        "type": "string"
+      },
+      "file": {
+        "type": "string"
+      },
+      "qualifier": {
+        "type": "string"
+      },
+      "node_key": {
+        "type": "string"
+      },
+      "procedure_start_line": {
+        "type": "integer"
+      },
+      "key": {
+        "type": "string"
+      },
+      "hash": {
+        "type": "string"
+      }
+    }
+  }
+}
