@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.jiangxin.sarif.converter.AbstractConverter;
-import edu.jiangxin.sarif.converter.infer.pojo.BugTrace;
 import edu.jiangxin.sarif.converter.infer.pojo.InferSchemaGenerated;
 import edu.jiangxin.sarif.converter.sarif.pojo.*;
 
@@ -52,9 +51,17 @@ public class Infer2SarifConverter extends AbstractConverter {
         List<Result> results = new ArrayList<>();
 
         for (InferSchemaGenerated inferReport : inferReports) {
+            URI helpUri = null;
+            try {
+                helpUri = new URI("https://fbinfer.com/docs/all-issue-types#" + inferReport.getBugType().toLowerCase());
+            } catch (URISyntaxException e) {
+                logger.info("create helpUri failed");
+            }
+
             ReportingDescriptor reportingDescriptor = new ReportingDescriptor()
                     .withId(inferReport.getBugType())
                     .withName(inferReport.getBugTypeHum())
+                    .withHelpUri(helpUri)
                     .withProperties(new PropertyBag()
                             .withAdditionalProperty("problem.severity", convertSeverity(inferReport.getSeverity())));
             addReportingDescriptorIfNeed(reportingDescriptors, reportingDescriptor);
@@ -103,6 +110,7 @@ public class Infer2SarifConverter extends AbstractConverter {
 
             Result result = new Result()
                     .withRuleId(inferReport.getBugType())
+                    .withLevel(Result.Level.fromValue(convertSeverity(inferReport.getSeverity())))
                     .withMessage(new Message()
                             .withText(inferReport.getQualifier()))
                     .withLocations(locations);
@@ -119,15 +127,17 @@ public class Infer2SarifConverter extends AbstractConverter {
         List<Run> runs = new ArrayList<>();
         runs.add(run);
 
+        URI schemaUri = null;
         try {
-            sarifSchema210
-                    .with$schema(new URI("https://json.schemastore.org/sarif-2.1.0.json"))
-                    .withVersion(SarifSchema210.Version._2_1_0).withRuns(runs);
-            return true;
+            schemaUri = new URI("https://json.schemastore.org/sarif-2.1.0.json");
         } catch (URISyntaxException e) {
-            logger.error("convertImpl failed: URISyntaxException");
-            return false;
+            logger.info("create schemaUri failed");
         }
+
+        sarifSchema210
+                .with$schema(schemaUri)
+                .withVersion(SarifSchema210.Version._2_1_0).withRuns(runs);
+        return true;
     }
 
     private List<InferSchemaGenerated> getInferReports(File input) {
@@ -177,6 +187,6 @@ public class Infer2SarifConverter extends AbstractConverter {
             logger.warn("severity is null");
             return null;
         }
-        return severity.toLowerCase(Locale.ROOT);
+        return severity.toLowerCase();
     }
 }
