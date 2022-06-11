@@ -59,10 +59,22 @@ public class Infer2SarifConverter extends AbstractConverter {
                             .withAdditionalProperty("problem.severity", convertSeverity(inferReport.getSeverity())));
             addReportingDescriptorIfNeed(reportingDescriptors, reportingDescriptor);
 
-            int problemLineNumber = inferReport.getLine();
-
             List<Location> locations = new ArrayList<>();
-            for (BugTrace bugTrace : inferReport.getBugTrace()) {
+            int problemLineNumber = inferReport.getLine();
+            int procedureStartLine = inferReport.getProcedureStartLine();
+            Location location = new Location().withPhysicalLocation(new PhysicalLocation()
+                    .withArtifactLocation(new ArtifactLocation()
+                            .withUri(inferReport.getFile()))
+                    .withRegion(new Region()
+                            .withMessage(new Message()
+                                    .withText(inferReport.getQualifier()))
+                            .withStartLine(Math.max(procedureStartLine, 1))
+                            .withEndLine(problemLineNumber + 2)
+                            .withStartColumn(1)
+                            .withEndColumn(1)));
+            locations.add(location);
+
+            /*for (BugTrace bugTrace : inferReport.getBugTrace()) {
                 int lineNumber = bugTrace.getLineNumber();
                 Message message = new Message();
                 if (problemLineNumber == lineNumber) {
@@ -78,23 +90,22 @@ public class Infer2SarifConverter extends AbstractConverter {
                 int endColumn = 1;
                 Location location = new Location()
                         .withPhysicalLocation(new PhysicalLocation()
-                                .withArtifactLocation(new ArtifactLocation()
-                                        .withUri(bugTrace.getFilename()))
-                                .withRegion(new Region()
-                                        .withMessage(message)
-                                        .withStartLine(startLine)
-                                        .withEndLine(endLine)
-                                        .withStartColumn(startColumn)
-                                        .withEndColumn(endColumn)));
+                        .withArtifactLocation(new ArtifactLocation()
+                                .withUri(bugTrace.getFilename()))
+                        .withRegion(new Region()
+                                .withMessage(message)
+                                .withStartLine(startLine)
+                                .withEndLine(endLine)
+                                .withStartColumn(startColumn)
+                                .withEndColumn(endColumn)));
                 locations.add(location);
-            }
+            }*/
 
             Result result = new Result()
                     .withRuleId(inferReport.getBugType())
                     .withMessage(new Message()
                             .withText(inferReport.getQualifier()))
-                    .withLocations(locations)
-                    .withPartialFingerprints(new PartialFingerprints().withAdditionalProperty("primaryLocationLineHash", inferReport.getHash()));
+                    .withLocations(locations);
             results.add(result);
         }
 
@@ -102,6 +113,7 @@ public class Infer2SarifConverter extends AbstractConverter {
                 .withTool(new Tool().
                         withDriver(new ToolComponent()
                                 .withName("Infer")
+                                .withVersion("v1.1.0")
                                 .withRules(reportingDescriptors)))
                 .withResults(results);
         List<Run> runs = new ArrayList<>();
@@ -109,7 +121,7 @@ public class Infer2SarifConverter extends AbstractConverter {
 
         try {
             sarifSchema210
-                    .with$schema(new URI("https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json"))
+                    .with$schema(new URI("https://json.schemastore.org/sarif-2.1.0.json"))
                     .withVersion(SarifSchema210.Version._2_1_0).withRuns(runs);
             return true;
         } catch (URISyntaxException e) {
