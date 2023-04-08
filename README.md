@@ -1,5 +1,9 @@
 # SarifConverter
 
+This project is archived because of Infer has supported SARIF format output since Infer <https://github.com/facebook/infer/pull/1487>
+
+[![Release Version](https://img.shields.io/github/v/release/jiangxincode/SarifConverter?include_prereleases&sort=semver)](
+
 `SARIF`, the Static Analysis Results Interchange Format, defines a standard format for the output of static analysis tools.
 
 You can see more for details about `SARIF`:
@@ -26,3 +30,5 @@ Download the latest Release:
 mvn clean package
 java -jar ./target/SarifConverter-${VERSION}.jar --input "./src/test/resources/infer_report.json" --output "./target/infer_report.sarif" --type infer2sarif
 ```
+
+There is a example: <https://github.com/jiangxincode/ApkToolBoxGUI/blob/master/.github/workflows/InferReport.yml>

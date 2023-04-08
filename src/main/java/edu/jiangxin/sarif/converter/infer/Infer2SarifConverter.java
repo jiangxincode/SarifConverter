@@ -67,16 +67,14 @@ public class Infer2SarifConverter extends AbstractConverter {
             addReportingDescriptorIfNeed(reportingDescriptors, reportingDescriptor);
 
             List<Location> locations = new ArrayList<>();
-            int problemLineNumber = inferReport.getLine();
-            int procedureStartLine = inferReport.getProcedureStartLine();
             Location location = new Location().withPhysicalLocation(new PhysicalLocation()
                     .withArtifactLocation(new ArtifactLocation()
                             .withUri(inferReport.getFile()))
                     .withRegion(new Region()
                             .withMessage(new Message()
                                     .withText(inferReport.getQualifier()))
-                            .withStartLine(Math.max(procedureStartLine, 1))
-                            .withEndLine(problemLineNumber + 2)
+                            .withStartLine(Math.max(inferReport.getProcedureStartLine(), 1))
+                            .withEndLine(inferReport.getLine())
                             .withStartColumn(1)
                             .withEndColumn(1)));
             locations.add(location);
